@@ -86,16 +86,6 @@ function App() {
         setServerPage(1);
         setNoMorePages(false);
 
-        // ========================================
-        // SCROLL POSITION PRESERVATION
-        // ========================================
-        // When adding new items to the top of the list, we need to maintain
-        // the user's current scroll position to avoid jarring jumps
-        
-        const scrollEl = document.scrollingElement || document.documentElement || document.body;
-        const prevScrollTop = scrollEl.scrollTop;        // Current scroll position
-        const prevScrollHeight = scrollEl.scrollHeight;  // Total scrollable height
-
         // Add unique IDs to each deal for React keys
         const newDeals = data.deals.map(d => ({ ...d, id: Date.now() + Math.random() }));
 
@@ -123,25 +113,8 @@ function App() {
             lastAddedTimerRef.current = setTimeout(() => setLastAddedIds([]), 10000);
           }
           
-          // Prepend new deals to existing ones
-          const combined = [...uniqueNew, ...prev];
-
-          // ========================================
-          // RESTORE SCROLL POSITION
-          // ========================================
-          // After React updates the DOM, adjust scroll to keep viewport stable
-          setTimeout(() => {
-            try {
-              const newScrollHeight = scrollEl.scrollHeight;
-              const delta = newScrollHeight - prevScrollHeight;
-              // Move scroll down by the amount new content increased above
-              if (delta !== 0) scrollEl.scrollTop = prevScrollTop + delta;
-            } catch (e) {
-              // Ignore scroll errors (may happen on some browsers)
-            }
-          }, 0);
-
-          return combined;
+          // Prepend new deals to top of list
+          return [...uniqueNew, ...prev];
         });
       }
     } catch (err) {
@@ -446,8 +419,6 @@ ${deal.url}
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '20px' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        {/* Prevent anchor-based scroll jumps */}
-        <div style={{ overflowAnchor: 'none' }}>
         
         {/* ========================================
             HEADER & CONTROLS SECTION
@@ -611,16 +582,27 @@ ${deal.url}
               <div style={{ marginTop: '10px', background: '#fff', padding: '10px', borderRadius: '8px', border: '1px solid #eee' }}>
                 <div style={{ fontWeight: 'bold' }}>{externalMeta.title || 'No title found'}</div>
                 {externalMeta.description && <div style={{ color: '#666', marginTop: '6px' }}>{externalMeta.description}</div>}
+                
+                {/* Show manual inputs if provided */}
+                {(externalOriginalPrice || externalCurrentPrice || externalDiscount || externalCouponCode) && (
+                  <div style={{ marginTop: '8px', padding: '8px', background: '#f0f9ff', borderRadius: '4px', fontSize: '13px' }}>
+                    {externalDiscount && <div>💥 Discount: {externalDiscount}%</div>}
+                    {externalOriginalPrice && <div>💰 Was: ${externalOriginalPrice}</div>}
+                    {externalCurrentPrice && <div>✨ Now: ${externalCurrentPrice}</div>}
+                    {externalCouponCode && <div>🎟️ Code: {externalCouponCode}</div>}
+                  </div>
+                )}
+                
                 <div style={{ marginTop: '8px', display: 'flex', gap: '8px' }}>
                   <button 
                     onClick={() => copy(generatePostForExternal(externalMeta, externalUrl))} 
-                    style={{ padding: '8px 12px', borderRadius: '6px', background: '#1877f2', color: 'white', border: 'none' }}
+                    style={{ padding: '8px 12px', borderRadius: '6px', background: '#1877f2', color: 'white', border: 'none', cursor: 'pointer' }}
                   >
                     📘 Copy FB Post
                   </button>
                   <button 
                     onClick={() => shareExternalOnFacebook(externalMeta, externalUrl)} 
-                    style={{ padding: '8px 12px', borderRadius: '6px', background: '#4267B2', color: 'white', border: 'none' }}
+                    style={{ padding: '8px 12px', borderRadius: '6px', background: '#4267B2', color: 'white', border: 'none', cursor: 'pointer' }}
                   >
                     🔁 Share on Facebook
                   </button>

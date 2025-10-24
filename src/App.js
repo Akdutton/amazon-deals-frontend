@@ -2,7 +2,7 @@
 // A React application for searching Amazon deals and sharing them on Facebook
 // Features: infinite scroll, deduplication, coupon code extraction, and social sharing
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, use } from 'react';
 import { Search, Facebook, AlertCircle } from 'lucide-react';
 
 function App() {
@@ -56,6 +56,10 @@ function App() {
   const [externalCurrentPrice, setExternalCurrentPrice] = useState('');
   const [externalDiscount, setExternalDiscount] = useState('');
   const [externalCouponCode, setExternalCouponCode] = useState('');
+
+  //API Monitoring state
+  const [monitorStats, setMonitorStats] = useState(null);
+  const [showMonitor, setShowMonitor] = useState(false);
 
   // ========================================
   // API FUNCTIONS
@@ -249,7 +253,7 @@ ${deal.url}
 
 ⚡Prices may change at any time.
 
-#AmazonDeals #Shopping #SaveMoney`;
+#AmazonDeals #AllAboutSavings`;
   };
 
   /**
@@ -368,6 +372,28 @@ ${deal.url}
     autoLoadDeals();
   }, [searchProductsWithKeyword]);
 
+  //=========================================
+  //FETCH MONITORING STATS
+  //=========================================
+
+  const fetchMonitorStats = useCallback(async () => { 
+    try {
+      const response = await fetch(`${API_BASE}/api/monitor-stats`);
+      const data = await response.json();
+      setMonitorStats(data);
+    } catch (err) {
+      console.error('Failed to fetch monitor stats:', err);
+    }
+  }, [API_BASE]);
+
+  useEffect(() => {
+    if (showMonitor) {
+      fetchMonitorStats();
+      const interval = setInterval(fetchMonitorStats, 60000); // Refresh every 60s
+      return () => clearInterval(interval);
+    }
+  }, [showMonitor, fetchMonitorStats]);
+
   // ========================================
   // FILTERING AND DISPLAY
   // ========================================
@@ -430,11 +456,101 @@ ${deal.url}
             <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '12px', borderRadius: '12px' }}>
               <Facebook style={{ width: '40px', height: '40px', color: 'white' }} />
             </div>
-            <div>
-              <h1 style={{ margin: 0, fontSize: '32px' }}>Amazon Deals Finder</h1>
+            <div style={{ flex: 1}}>
+             <h1 style={{ margin: 0, fontSize: '32px' }}>Amazon Deals Finder</h1>
               <p style={{ margin: 0, color: '#666' }}>Find hot deals for Facebook</p>
             </div>
+            <button 
+              onClick={() => setShowMonitor(!showMonitor)}
+              style={{ 
+                padding: '10px 20px', 
+                background: showMonitor ? '#10b981' : '#667eea', 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: '8px', 
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
+            >
+              {showMonitor ? '📊 Hide Monitor' : '📊 API Monitor'}
+            </button>
           </div>
+
+          {/* API Monitoring Panel */}
+          {showMonitor && monitorStats && (
+            <div style={{ background: '#f9fafb', padding: '20px', borderRadius: '12px', marginBottom: '20px', border: '2px solid #e5e7eb' }}>
+              <h2 style={{ fontSize: '20px', marginBottom: '15px', color: '#333' }}>🔍 API Usage Monitor</h2>
+              
+              {/* Key Metrics Grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginBottom: '15px' }}>
+                
+                {/* Daily Requests */}
+                <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                  <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>DAILY REQUESTS</div>
+                  <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#333' }}>{monitorStats.dailyCount}</div>
+                  <div style={{ fontSize: '11px', color: '#999' }}>{monitorStats.dailyPercentage} of 8,640</div>
+                  <div style={{ background: '#e5e7eb', height: '6px', borderRadius: '3px', marginTop: '8px', overflow: 'hidden' }}>
+                    <div style={{ 
+                      background: monitorStats.dailyCount > 7000 ? '#ef4444' : monitorStats.dailyCount > 5000 ? '#f59e0b' : '#10b981', 
+                      height: '100%', 
+                      width: monitorStats.dailyPercentage,
+                      transition: 'width 0.3s'
+                    }} />
+                  </div>
+                </div>
+                
+                {/* Success Rate */}
+                <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                  <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>SUCCESS RATE</div>
+                  <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#10b981' }}>
+                    {monitorStats.totalRequests > 0 ? ((monitorStats.successCount / monitorStats.totalRequests) * 100).toFixed(1) : 0}%
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#999' }}>{monitorStats.successCount} successful</div>
+                </div>
+                
+                {/* Error Count */}
+                <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                  <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>ERRORS</div>
+                  <div style={{ fontSize: '28px', fontWeight: 'bold', color: monitorStats.errorCount > 0 ? '#ef4444' : '#10b981' }}>{monitorStats.errorCount}</div>
+                  <div style={{ fontSize: '11px', color: '#999' }}>Failed requests</div>
+                </div>
+                
+                {/* Throttle Count */}
+                <div style={{ background: monitorStats.throttleCount > 0 ? '#fee' : 'white', padding: '15px', borderRadius: '8px', border: '1px solid ' + (monitorStats.throttleCount > 0 ? '#fca5a5' : '#e5e7eb') }}>
+                  <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>THROTTLED</div>
+                  <div style={{ fontSize: '28px', fontWeight: 'bold', color: monitorStats.throttleCount > 0 ? '#dc2626' : '#10b981' }}>{monitorStats.throttleCount}</div>
+                  <div style={{ fontSize: '11px', color: '#999' }}>{monitorStats.throttleRate}</div>
+                </div>
+                
+              </div>
+              
+              {/* Operations Breakdown */}
+              {Object.keys(monitorStats.operationCounts || {}).length > 0 && (
+                <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                  <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>Operations:</div>
+                  {Object.entries(monitorStats.operationCounts).map(([op, count]) => (
+                    <div key={op} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: '13px' }}>
+                      <span style={{ color: '#666' }}>{op.replace('com.amazon.paapi5.v1.ProductAdvertisingAPIv1.', '')}</span>
+                      <span style={{ fontWeight: 'bold', color: '#333' }}>{count}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {/* Warnings */}
+              {monitorStats.dailyCount > 7000 && (
+                <div style={{ background: '#fef3c7', border: '1px solid #fbbf24', padding: '12px', borderRadius: '8px', marginTop: '12px', fontSize: '13px', color: '#92400e' }}>
+                  ⚠️ Warning: Approaching daily limit ({monitorStats.dailyCount}/8,640)
+                </div>
+              )}
+              {monitorStats.throttleCount > 5 && (
+                <div style={{ background: '#fee', border: '1px solid #fca5a5', padding: '12px', borderRadius: '8px', marginTop: '12px', fontSize: '13px', color: '#991b1b' }}>
+                  🚨 High throttle count detected! Consider slowing down requests.
+                </div>
+              )}
+              
+            </div>
+          )}
 
           {/* Debug Info & Settings */}
           <div style={{ marginBottom: '10px', color: '#666', display: 'flex', gap: '12px', alignItems: 'center' }}>

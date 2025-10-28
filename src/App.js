@@ -708,6 +708,16 @@ ${deal.url}
               <div style={{ marginTop: '10px', background: '#fff', padding: '10px', borderRadius: '8px', border: '1px solid #eee' }}>
                 <div style={{ fontWeight: 'bold' }}>{externalMeta.title || 'No title found'}</div>
                 {externalMeta.description && <div style={{ color: '#666', marginTop: '6px' }}>{externalMeta.description}</div>}
+
+                {/* Displays ratings if available */}
+                {externalMeta.rating && (
+                  <div style={{ marginTop: '6px' }}>
+                    <span style={{ color: '#f90' }}>⭐ {externalMeta.rating}</span>
+                    {externalMeta.reviewCount && (
+                      <span style={{ color: '#999', marginLeft: '10px' }}>({externalMeta.reviewCount.toLocaleString()} reviews)</span>
+                     )} 
+                  </div>
+                )}
                 
                 {/* Show manual inputs if provided */}
                 {(externalOriginalPrice || externalCurrentPrice || externalDiscount || externalCouponCode) && (

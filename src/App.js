@@ -44,7 +44,7 @@ function App() {
   
   // Filtering options
   const [showOnlyWithCodes, setShowOnlyWithCodes] = useState(false);  // Filter to only show deals with coupon codes
-  const [maxResults, setMaxResults] = useState(10);                   // Max number of deals to display
+  const [maxResults, setMaxResults] = useState(1000);                   // Max number of deals to display
   
   // External URL sharing feature
   const [externalUrl, setExternalUrl] = useState('');           // URL input for non-Amazon links
@@ -261,6 +261,16 @@ ${deal.url}
    * @param {string} text - Text to copy
    */
   const copy = (text) => {
+    //Clean text for better Facebook compatibility
+    const cleanText =text
+       .replace(/\r\n/g, '\n')       // Normalize line endings
+       .replace(/\r/g, '\n')         // Normalize line endings
+       .replace(/\n{3,}/g, '\n\n')   // Reduce multiple line breaks
+       .replace(/[\u200B-\u200D\uFEFF]/g, '') // Remove zero-width characters
+       .replace(/[""]/g, '"')        // Replace smart quotes
+       .replace(/['']/g, "'")        // Replace smart apostrophes
+       .trim();
+      
     navigator.clipboard.writeText(text);
     alert('✅ Copied!');
   };
@@ -335,7 +345,7 @@ ${deal.url}
       priceSection += `💰 Price: ${currPrice}\n\n`;
     }
     
-    return `#ad\n${priceSection}${meta.title || url}\n\n${meta.description ? meta.description + '\n\n' : ''}Grab it now! 👇\n${url}\n\n⚡Prices may change at any time.\n\n#AmazonDeals #SaveMoney`;
+    return `#ad\n${priceSection}${meta.title || url}\n\n${meta.description ? meta.description + '\n\n' : ''}Grab it now! 👇\n${url}\n\n⚡Prices may change at any time.\n\n#AmazonDeals #AllAboutSavings`;
   };
 
   /**
@@ -378,7 +388,7 @@ ${deal.url}
 
   const fetchMonitorStats = useCallback(async () => { 
     try {
-      const response = await fetch(`${API_BASE}/api/monitor-stats`);
+      const response = await fetch(`${API_BASE}/api/monitor/stats`);
       const data = await response.json();
       setMonitorStats(data);
     } catch (err) {

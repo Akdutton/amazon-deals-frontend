@@ -801,7 +801,7 @@ ${deal.url}
               <div>Avg Discount</div>
             </div>
           </div>
-        </div>
+        
 
         {/* ========================================
             DEALS LIST

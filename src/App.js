@@ -495,19 +495,21 @@ ${deal.url}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginBottom: '15px' }}>
                 
                 {/* Daily Requests */}
-                <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-                  <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>DAILY REQUESTS</div>
-                  <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#333' }}>{monitorStats.dailyCount}</div>
-                  <div style={{ fontSize: '11px', color: '#999' }}>{monitorStats.dailyPercentage} of 8,640</div>
-                  <div style={{ background: '#e5e7eb', height: '6px', borderRadius: '3px', marginTop: '8px', overflow: 'hidden' }}>
-                    <div style={{ 
-                      background: monitorStats.dailyCount > 7000 ? '#ef4444' : monitorStats.dailyCount > 5000 ? '#f59e0b' : '#10b981', 
-                      height: '100%', 
-                      width: monitorStats.dailyPercentage,
-                      transition: 'width 0.3s'
-                    }} />
-                  </div>
+              <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>DAILY REQUESTS</div>
+                <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#333' }}>{monitorStats.dailyCount}</div>
+                <div style={{ fontSize: '11px', color: '#999' }}>
+                  {monitorStats.dailyPercent}% of {monitorStats.dailyLimit?.toLocaleString()}
                 </div>
+                <div style={{ background: '#e5e7eb', height: '6px', borderRadius: '3px', marginTop: '8px', overflow: 'hidden' }}>
+                  <div style={{ 
+                    background: monitorStats.dailyWarning ? '#ef4444' : parseFloat(monitorStats.dailyPercent) > 50 ? '#f59e0b' : '#10b981', 
+                    height: '100%', 
+                    width: monitorStats.dailyPercent + '%',
+                    transition: 'width 0.3s'
+                  }} />
+                </div>
+              </div>
                 
                 {/* Success Rate */}
                 <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
@@ -548,19 +550,21 @@ ${deal.url}
               )}
               
               {/* Warnings */}
-              {monitorStats.dailyCount > 7000 && (
+             {monitorStats.dailyWarning && (
+               <div style={{ background: '#fef3c7', border: '1px solid #fbbf24', padding: '12px', borderRadius: '8px', marginTop: '12px', fontSize: '13px', color: '#92400e' }}>
+                 ⚠️ Warning: Approaching daily limit ({monitorStats.dailyCount}/{monitorStats.dailyLimit?.toLocaleString()})
+               </div>
+              )}
+              {monitorStats.monthlyWarning && (
                 <div style={{ background: '#fef3c7', border: '1px solid #fbbf24', padding: '12px', borderRadius: '8px', marginTop: '12px', fontSize: '13px', color: '#92400e' }}>
-                  ⚠️ Warning: Approaching daily limit ({monitorStats.dailyCount}/8,640)
+                  ⚠️ Warning: Approaching monthly limit ({monitorStats.monthlyCount}/{monitorStats.monthlyLimit?.toLocaleString()})
                 </div>
-              )}
-              {monitorStats.throttleCount > 5 && (
-                <div style={{ background: '#fee', border: '1px solid #fca5a5', padding: '12px', borderRadius: '8px', marginTop: '12px', fontSize: '13px', color: '#991b1b' }}>
-                  🚨 High throttle count detected! Consider slowing down requests.
-                </div>
-              )}
-              
-            </div>
-          )}
+       )}
+             {monitorStats.throttleCount > 5 && (
+               <div style={{ background: '#fee', border: '1px solid #fca5a5', padding: '12px', borderRadius: '8px', marginTop: '12px', fontSize: '13px', color: '#991b1b' }}>
+                 🚨 High throttle count detected! Consider slowing down requests.
+               </div>
+      )}
 
           {/* Debug Info & Settings */}
           <div style={{ marginBottom: '10px', color: '#666', display: 'flex', gap: '12px', alignItems: 'center' }}>

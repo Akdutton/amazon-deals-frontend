@@ -511,6 +511,23 @@ ${deal.url}
                 </div>
               </div>
                 
+                {/* Monthly Requests */}
+                <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>MONTHLY REQUESTS</div>
+                <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#333' }}>{monitorStats.monthlyCount}</div>
+                <div style={{ fontSize: '11px', color: '#999' }}>
+                  {monitorStats.monthlyPercent}% of {monitorStats.monthlyLimit?.toLocaleString()}
+                </div>
+                <div style={{ background: '#e5e7eb', height: '6px', borderRadius: '3px', marginTop: '8px', overflow: 'hidden' }}>
+                  <div style={{ 
+                    background: monitorStats.monthlyWarning ? '#ef4444' : parseFloat(monitorStats.monthlyPercent) > 50 ? '#f59e0b' : '#10b981', 
+                    height: '100%', 
+                    width: monitorStats.monthlyPercent + '%',
+                    transition: 'width 0.3s'
+                  }} />
+                </div>
+              </div>
+                
                 {/* Success Rate */}
                 <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
                   <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>SUCCESS RATE</div>

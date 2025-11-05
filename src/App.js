@@ -11,7 +11,7 @@ function App() {
   // ========================================
   
   // Backend API URL - defaults to localhost for development
-  const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:3001';
+  const API_BASE = process.env.REACT_APP_API_BASE ||  'https://amazon-deals-backend.onrender.com';
 
   // ========================================
   // STATE MANAGEMENT
@@ -1062,20 +1062,19 @@ ${deal.url}
           </div>
         )}
 
-        {/* Sentinel Div for Infinite Scroll Detection */}
-        <div ref={sentinelRef} style={{ height: '1px' }} />
-        
-        </div>
+        {/* Sentinel div for IntersectionObserver */}
+        <div ref={sentinelRef} style={{ height: '1px' }}></div>
         
         {/* Loading Indicator */}
         {isLoadingMore && (
           <div style={{ textAlign: 'center', marginTop: '10px', color: '#666' }}>
-            Loading more...
+            Loading more deals...
           </div>
         )}
+
       </div>
-    
-  
-  );}
+    </div>
+  );
+}
 
 export default App;

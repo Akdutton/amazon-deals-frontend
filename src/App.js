@@ -582,6 +582,8 @@ ${deal.url}
                  🚨 High throttle count detected! Consider slowing down requests.
                </div>
       )}
+            </div>
+          )}
 
           {/* Debug Info & Settings */}
           <div style={{ marginBottom: '10px', color: '#666', display: 'flex', gap: '12px', alignItems: 'center' }}>
@@ -799,6 +801,7 @@ ${deal.url}
                 {deals.length > 0 ? Math.round(deals.reduce((sum, d) => sum + d.discount, 0) / deals.length) : 0}%
               </div>
               <div>Avg Discount</div>
+              </div>
             </div>
           </div>
         

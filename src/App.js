@@ -621,6 +621,70 @@ ${deal.url}
   )}
 </div>
 
+{/* Preview section */}
+{externalMeta && (
+  <div
+    style={{
+      marginTop: '20px',
+      background: 'white',
+      borderRadius: '10px',
+      padding: '20px',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '20px',
+      marginBottom: '25px'
+    }}
+  >
+    {/* Product image */}
+    {externalMeta.image && (
+      <img
+        src={externalMeta.image}
+        alt={externalMeta.title}
+        style={{
+          width: '140px',
+          height: '140px',
+          objectFit: 'contain',
+          borderRadius: '10px',
+          border: '1px solid #eee'
+        }}
+      />
+    )}
+
+    {/* Text details */}
+    <div style={{ flex: 1 }}>
+      <h3 style={{ margin: '0 0 10px 0', fontSize: '18px', color: '#333' }}>
+        {externalMeta.title || 'No Title Found'}
+      </h3>
+      {externalMeta.description && (
+        <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>
+          {externalMeta.description}
+        </p>
+      )}
+
+      {/* Ratings, Price & Code */}
+      <div style={{ marginTop: '10px', fontSize: '14px', color: '#444' }}>
+        {externalMeta.rating && (
+          <span style={{ color: '#f59e0b' }}>
+            ⭐ {externalMeta.rating} ({externalMeta.reviewCount} reviews)
+          </span>
+        )}
+        {externalCurrentPrice && (
+          <div style={{ marginTop: '6px' }}>
+            <strong>Now:</strong> ${externalCurrentPrice} &nbsp;| 
+            <strong>Was:</strong> ${externalOriginalPrice}
+          </div>
+        )}
+        {externalCouponCode && (
+          <div style={{ marginTop: '4px' }}>
+            🎟️ Code: <b>{externalCouponCode}</b>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+)}
+
           {/* Stats */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
             <div style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)', color: 'white', padding: '20px', borderRadius: '10px', textAlign: 'center' }}>

@@ -2,7 +2,7 @@
 // A React application for searching Amazon deals and sharing them on Facebook
 // Features: infinite scroll, deduplication, coupon code extraction, and social sharing
 
-import React, { useState, useEffect, useCallback, use } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Search, Facebook, AlertCircle } from 'lucide-react';
 
 function App() {
@@ -11,7 +11,7 @@ function App() {
   // ========================================
   
   // Backend API URL - defaults to localhost for development
-  const API_BASE = process.env.REACT_APP_API_BASE ||  'https://amazon-deals-backend.onrender.com';
+  const API_BASE = 'https://amazon-deals-backend.onrender.com';
 
   // ========================================
   // STATE MANAGEMENT
@@ -30,7 +30,7 @@ function App() {
   
   // Visual feedback for newly added items
   const [lastAddedIds, setLastAddedIds] = useState([]);  // IDs of recently added deals (shown as "NEW")
-  const lastAddedTimerRef = React.useRef(null);          // Timer to clear "NEW" badges after 10s
+  const lastAddedTimerRef = useRef(null);          // Timer to clear "NEW" badges after 10s
   
   // Server-side pagination state
   const [serverPage, setServerPage] = useState(1);       // Current page number from API
@@ -207,7 +207,7 @@ function App() {
   // ========================================
   
   // Ref for the sentinel div that triggers loading when visible
-  const sentinelRef = React.useRef(null);
+  const sentinelRef = useRef(null);
   
   // Placeholder effect - actual observer is set up after filtered/displayedDeals are defined
   useEffect(() => {

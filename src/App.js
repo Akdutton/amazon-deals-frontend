@@ -265,6 +265,7 @@ ${deal.url}
     const origPrice = externalOriginalPrice || meta.originalPrice || '';
     const currPrice = externalCurrentPrice || meta.discountedPrice || '';
     const discount = externalDiscount || '';
+    const couponCode = externalCouponCode || meta.couponCode || '';
     
     let priceSection = '';
     
@@ -273,18 +274,22 @@ ${deal.url}
     }
     
     if (origPrice && currPrice) {
-      priceSection += `💰 Was: ${origPrice}\n✨ Now: ${currPrice}\n`;
-      const savings = (parseFloat(origPrice) - parseFloat(currPrice)).toFixed(2);
-      if (savings > 0) {
-        priceSection += `💵 Save: ${savings}!\n`;
-      }
-      priceSection += '\n';
-    } else if (currPrice) {
+     const diff = parseFloat(origPrice) - parseFloat(currPrice);
+    const savings = diff > 0 ? diff.toFixed(2) : '';
+    priceSection += `💰 Was: ${origPrice}\n✨ Now: ${currPrice}\n`;
+    if (savings) priceSection += `💵 Save $${savings}!\n`;
+    priceSection += '\n';
+  } else if (currPrice) {
+    priceSection += `💰 Price: ${currPrice}\n\n`;
+  }
+    if (code) {
+      priceSection += `Use code: ${couponCode}\n\n`;
+    } 
+    return `#ad\n\n${priceSection}${meta.title || url}\n\n${meta.description ? meta.description + '\n\n' : ''}Grab it now! 👇\n${url}\n\n⚡Prices may change at any time.\n\n#AmazonDeals #AllAboutSavings`;
       priceSection += `💰 Price: ${currPrice}\n\n`;
-    }
+    };
     
-    return `#ad\n${priceSection}${meta.title || url}\n\n${meta.description ? meta.description + '\n\n' : ''}Grab it now! 👇\n${url}\n\n⚡Prices may change at any time.\n\n#AmazonDeals #AllAboutSavings`;
-  };
+    
 
   const shareExternalOnFacebook = (meta, url) => {
     const quote = encodeURIComponent(generatePostForExternal(meta, url));
@@ -512,6 +517,109 @@ ${deal.url}
               />
             </label>
           </div>
+
+          {/* External URL & Manual Facebook Post Generator */}
+<div style={{ marginTop: '20px', paddingTop: '15px', borderTop: '1px solid #ddd' }}>
+  {/* URL input and Fetch button */}
+  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '10px' }}>
+    <input 
+      type="text"
+      value={externalUrl}
+      onChange={(e) => setExternalUrl(e.target.value)}
+      placeholder="Paste Amazon URL to create Facebook post"
+      style={{
+        flex: 1,
+        padding: '10px 12px',
+        fontSize: '14px',
+        border: '2px solid #ddd',
+        borderRadius: '6px'
+      }}
+    />
+    <button 
+      onClick={fetchExternalMetadata}
+      disabled={fetchingMeta}
+      style={{
+        padding: '10px 16px',
+        borderRadius: '6px',
+        background: '#2563eb',
+        color: 'white',
+        border: 'none',
+        cursor: fetchingMeta ? 'not-allowed' : 'pointer',
+        fontWeight: 'bold'
+      }}
+    >
+      {fetchingMeta ? 'Fetching…' : 'Fetch'}
+    </button>
+  </div>
+
+  {/* Manual Inputs */}
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '10px' }}>
+    <input 
+      type="number" 
+      value={externalOriginalPrice}
+      onChange={(e) => setExternalOriginalPrice(e.target.value)}
+      placeholder="Original Price ($)"
+      step="0.01"
+      style={{ padding: '8px', border: '2px solid #ddd', borderRadius: '6px' }}
+    />
+    <input 
+      type="number" 
+      value={externalCurrentPrice}
+      onChange={(e) => setExternalCurrentPrice(e.target.value)}
+      placeholder="Current Price ($)"
+      step="0.01"
+      style={{ padding: '8px', border: '2px solid #ddd', borderRadius: '6px' }}
+    />
+    <input 
+      type="number" 
+      value={externalDiscount}
+      onChange={(e) => setExternalDiscount(e.target.value)}
+      placeholder="Discount (%)"
+      style={{ padding: '8px', border: '2px solid #ddd', borderRadius: '6px' }}
+    />
+    <input 
+      type="text"
+      value={externalCouponCode}
+      onChange={(e) => setExternalCouponCode(e.target.value)}
+      placeholder="Coupon Code"
+      style={{ padding: '8px', border: '2px solid #ddd', borderRadius: '6px' }}
+    />
+  </div>
+
+  {/* Buttons for FB Post */}
+  {externalUrl && (
+    <div style={{ display: 'flex', gap: '8px' }}>
+      <button
+        onClick={() => copy(generatePostForExternal(externalMeta || {}, externalUrl))}
+        style={{
+          padding: '10px 14px',
+          borderRadius: '6px',
+          background: '#1877f2',
+          color: 'white',
+          fontWeight: 'bold',
+          border: 'none',
+          cursor: 'pointer'
+        }}
+      >
+        📘 Copy FB Post
+      </button>
+      <button
+        onClick={() => shareExternalOnFacebook(externalMeta || {}, externalUrl)}
+        style={{
+          padding: '10px 14px',
+          borderRadius: '6px',
+          background: '#4267B2',
+          color: 'white',
+          fontWeight: 'bold',
+          border: 'none',
+          cursor: 'pointer'
+        }}
+      >
+        🔁 Share on Facebook
+      </button>
+    </div>
+  )}
+</div>
 
           {/* Stats */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>

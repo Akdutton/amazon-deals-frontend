@@ -282,7 +282,7 @@ ${deal.url}
   } else if (currPrice) {
     priceSection += `💰 Price: ${currPrice}\n\n`;
   }
-    if (code) {
+    if (couponCode) {
       priceSection += `Use code: ${couponCode}\n\n`;
     } 
     return `#ad\n\n${priceSection}${meta.title || url}\n\n${meta.description ? meta.description + '\n\n' : ''}Grab it now! 👇\n${url}\n\n⚡Prices may change at any time.\n\n#AmazonDeals #AllAboutSavings`;

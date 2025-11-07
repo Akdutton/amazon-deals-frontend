@@ -19,7 +19,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
-  const [dedupeKey, setDedupeKey] = useState('asin');
+  const [dedupeKey] = useState('asin');
   const [lastAddedIds, setLastAddedIds] = useState([]);
   const lastAddedTimerRef = useRef(null);
   

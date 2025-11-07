@@ -44,7 +44,8 @@ function App() {
 
   const [monitorStats, setMonitorStats] = useState(null);
   const [showMonitor, setShowMonitor] = useState(false);
-
+  const [aiModel, setAiModel] = useState('turner007//pegasus_paraphrase');
+  const [aiStaus, setAiStatus] = useState('Ready');
   const sentinelRef = useRef(null);
 
   // ========================================
@@ -514,6 +515,51 @@ ${deal.url}
               />
             </label>
           </div>
+
+         <button
+  onClick={async () => {
+    try {
+      setAiStatus('Processing…');
+      const text = generatePost(deal);
+
+      const resp = await fetch(`${API_BASE}/api/rewrite`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, model: aiModel })
+      });
+
+      const data = await resp.json();
+
+      if (data.success) {
+        setDeals(prev =>
+          prev.map(d =>
+            d.id === deal.id ? { ...d, rewritten: data.rewritten } : d
+          )
+        );
+        setAiStatus('Done ✅');
+      } else {
+        setAiStatus('Error ❌');
+        alert(`Rewrite failed: ${data.error || 'Unknown error'}`);
+      }
+    } catch (err) {
+      setAiStatus('Error ❌');
+      alert(`AI rewrite failed: ${err.message}`);
+    }
+  }}
+  disabled={aiStatus === 'Processing…'}
+  style={{
+    padding: '10px',
+    background: aiStatus === 'Processing…' ? '#999' : '#22c55e',
+    color: 'white',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: aiStatus === 'Processing…' ? 'wait' : 'pointer',
+    fontWeight: 'bold',
+    fontSize: '12px'
+  }}
+>
+  {aiStatus === 'Processing…' ? '⏳ Rewriting...' : '🤖 AI Rewrite'}
+</button> 
 
           {/* External URL & Manual Facebook Post Generator */}
 <div style={{ marginTop: '20px', paddingTop: '15px', borderTop: '1px solid #ddd' }}>

@@ -380,7 +380,7 @@ ${deal.url}
   // RENDER UI
   // ========================================
 
-  return (
+   return(
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '20px' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         
@@ -398,7 +398,7 @@ ${deal.url}
             <button 
               onClick={() => setShowMonitor(!showMonitor)}
               style={{ 
-                padding: '10px 20px', 
+                padding: 'return10px 20px', 
                 background: showMonitor ? '#10b981' : '#667eea', 
                 color: 'white', 
                 border: 'none', 
@@ -515,7 +515,8 @@ ${deal.url}
               />
             </label>
           </div>
-
+</div>
+</div>
          <button
   onClick={async () => {
     try {
@@ -560,6 +561,34 @@ ${deal.url}
 >
   {aiStatus === 'Processing…' ? '⏳ Rewriting...' : '🤖 AI Rewrite'}
 </button> 
+
+{/* 🤖 AI Model Settings */}
+<div
+  style={{
+    background: '#f9fafb',
+    padding: '16px',
+    borderRadius: '8px',
+    border: '1px solid #e5e7eb',
+    marginBottom: '25px'
+  }}
+>
+  <strong style={{ fontSize: '16px' }}>🤖 AI Model</strong>
+  <div style={{ marginTop: '8px' }}>
+    <select
+      value={aiModel}
+      onChange={(e) => setAiModel(e.target.value)}   // ✅ uses setAiModel()
+      style={{
+        padding: '6px 8px',
+        borderRadius: '6px',
+        border: '1px solid #ccc'
+      }}
+    >
+      <option value="tuner007/pegasus_paraphrase">Pegasus (High Quality)</option>
+      <option value="humarin/chatgpt_paraphraser_on_T5_base">ChatGPT‑T5</option>
+      <option value="google/flan-t5-base">Flan‑T5 (Fast)</option>
+    </select>
+  </div>
+
 
           {/* External URL & Manual Facebook Post Generator */}
 <div style={{ marginTop: '20px', paddingTop: '15px', borderTop: '1px solid #ddd' }}>
@@ -746,221 +775,351 @@ ${deal.url}
             </div>
           </div>
         </div>
-
-        {/* DEALS */}
-        {displayedDeals.length === 0 ? (
-          <div style={{ background: 'white', borderRadius: '15px', padding: '60px', textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
-            <Search style={{ width: '80px', height: '80px', color: '#ddd', margin: '0 auto 20px' }} />
-            <h2>No deals yet!</h2>
-            <p>Search for products above</p>
-          </div>
-        ) : (
-          displayedDeals.map(deal => (
-            <div 
-              key={deal.id} 
-              style={{ 
-                background: 'white', 
-                borderRadius: '15px', 
-                padding: '25px', 
-                marginBottom: '20px', 
-                boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-                display: 'grid',
-                gridTemplateColumns: '200px 1fr auto',
-                gap: '25px'
-              }}
-            >
-              
-              {/* Image */}
-              <div style={{ position: 'relative', minWidth: '200px' }}>
-                <img 
-                  src={deal.image} 
-                  alt={deal.title} 
-                  style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '10px' }} 
-                  onError={(e) => e.target.src = 'https://via.placeholder.com/200'}
-                />
-                <div style={{ 
-                  position: 'absolute', 
-                  top: '10px', 
-                  right: '10px', 
-                  background: '#f00', 
-                  color: 'white', 
-                  padding: '8px 12px', 
-                  borderRadius: '20px', 
-                  fontWeight: 'bold' 
-                }}>
-                  -{deal.discount}%
-                </div>
-              </div>
-
-              {/* Details */}
-              <div>
-                <h3 style={{ fontSize: '20px', marginBottom: '10px' }}>
-                  {deal.title}
-                  {lastAddedIds.includes(deal.id) && (
-                    <span style={{ background: '#fde68a', color: '#92400e', padding: '2px 6px', borderRadius: '4px', fontSize: '11px', marginLeft: '8px' }}>NEW</span>
-                  )}
-                </h3>
-                
-                <div style={{ marginBottom: '10px' }}>
-                  <span style={{ color: '#f90' }}>⭐ {deal.rating}</span>
-                  <span style={{ color: '#999', marginLeft: '10px' }}>({deal.reviewCount.toLocaleString()})</span>
-                </div>
-                
-                <div style={{ marginBottom: '10px' }}>
-                  <span style={{ fontSize: '28px', fontWeight: 'bold', color: '#0a0' }}>
-                    ${deal.currentPrice.toFixed(2)}
-                  </span>
-                  <span style={{ fontSize: '18px', color: '#999', textDecoration: 'line-through', marginLeft: '10px' }}>
-                    ${deal.originalPrice.toFixed(2)}
-                  </span>
-                </div>
-                
-                <div style={{ color: '#0a0', fontWeight: 'bold' }}>
-                  💰 Save ${(deal.originalPrice - deal.currentPrice).toFixed(2)}!
-                </div>
-              </div>
-
-              {/* Buttons */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '150px' }}>
-                {getDealCode(deal) && (
-                  <button 
-                    onClick={() => copy(getDealCode(deal))} 
-                    style={{ padding: '10px', background: '#10b981', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
-                  >
-                    🎟️ Copy Code
-                  </button>
-                )}
-                
-                <button 
-                  onClick={() => copy(generatePost(deal))} 
-                  style={{ padding: '10px', background: '#1877f2', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
-                >
-                  📘 Copy Post
-                </button>
-
-              {/* 🤖 AI Rewrite button */}
-              <button
-                onClick={async () => {
-                  const text = generatePost(deal);
-    
-                  const resp = await fetch(`${API_BASE}/api/rewrite`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ text })
-                });
-                const data = await resp.json();
-                if (data.success) {
-              // Copy or alert the rewritten text (you can also open a modal)
-                setDeals(prev => 
-                  prev.map(d =>
-                     d.id === deal.id ? { ...d, rewritten: data.rewritten }: d
-                    )
-                  );
-                }
-              }}
-              style={{ padding: '10px',
-              background: '#22c55e', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '6px', 
-              cursor: 'pointer', 
-              fontWeight: 'bold', 
-              fontSize: '12px' 
-               }}
-              > 
-              🤖 AI Rewrite
-             </button>
-
-             {/* ✅ PREVIEW GOES HERE — inside the same map */}
-            {deal.rewritten && (
-             <textarea
-               readOnly
-               value={deal.rewritten}
-               style={{
-                 gridColumn: '1 / -1',
-                 marginTop: '10px',
-                 width: '100%',
-                 height: '100px',
-                 fontSize: '12px',
-                 padding: '6px',
-                 border: '1px solid #ccc',
-                 borderRadius: '6px',
-                 background: '#f9fafb',
-                 color: '#333'
-                 }}
-              />
-            )}
-       
-        
-      
-                
-                <button 
-                  onClick={() => shareToFacebook(deal)} 
-                  style={{ padding: '10px', background: '#4267B2', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
-                >
-                  🔁 Share FB
-                </button>
-                
-                <button 
-                  onClick={() => copy(deal.url)} 
-                  style={{ padding: '10px', background: '#8b5cf6', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
-                >
-                  🔗 Copy Link
-                </button>
-                
-                <button 
-                  onClick={() => window.open(deal.url, '_blank')} 
-                  style={{ padding: '10px', background: '#ff9900', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
-                >
-                  🛒 View Amazon
-                </button>
-                
-                <button 
-                  onClick={() => setDeals(deals.filter(d => d.id !== deal.id))} 
-                  style={{ padding: '10px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}
-                >
-                  🗑️ Remove
-                </button>
-              </div>
-            </div>
-          ))
-        )}
-
-      
-
-
-        {/* Sentinel */}
-        <div ref={sentinelRef} style={{ height: '1px' }}></div>
-        
-        {isLoadingMore && (
-          <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-            Loading more deals...
-          </div>
-        )}
-
-        {!noMorePages && displayedDeals.length > 0 && (
-          <div style={{ textAlign: 'center', marginTop: '20px' }}>
-            <button 
-              onClick={loadMoreFromServer} 
-              disabled={isLoadingMore} 
-              style={{ 
-                padding: '12px 20px', 
-                background: isLoadingMore ? '#999' : '#1f2937', 
-                color: 'white', 
-                border: 'none', 
-                borderRadius: '8px', 
-                cursor: isLoadingMore ? 'not-allowed' : 'pointer',
-                fontWeight: 'bold'
-              }}
-            >
-              {isLoadingMore ? 'Loading...' : 'Load More'}
-            </button>
-          </div>
-        )}
-
+          {/* DEALS */}
+{displayedDeals.length === 0 ? (
+  <div
+    style={{
+      background: 'white',
+      borderRadius: '15px',
+      padding: '60px',
+      textAlign: 'center',
+      boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+    }}
+  >
+    <Search
+      style={{
+        width: '80px',
+        height: '80px',
+        color: '#ddd',
+        margin: '0 auto 20px',
+      }}
+    />
+    <h2>No deals yet!</h2>
+    <p>Search for products above</p>
+  </div>
+) : (
+  displayedDeals.map((deal) => (
+    <div
+      key={deal.id}
+      style={{
+        background: 'white',
+        borderRadius: '15px',
+        padding: '25px',
+        marginBottom: '20px',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+        display: 'grid',
+        gridTemplateColumns: '200px 1fr auto',
+        gap: '25px',
+      }}
+    >
+      {/* Image */}
+      <div style={{ position: 'relative', minWidth: '200px' }}>
+        <img
+          src={deal.image}
+          alt={deal.title}
+          style={{
+            width: '100%',
+            height: '200px',
+            objectFit: 'cover',
+            borderRadius: '10px',
+          }}
+          onError={(e) => (e.target.src = 'https://via.placeholder.com/200')}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            background: '#f00',
+            color: 'white',
+            padding: '8px 12px',
+            borderRadius: '20px',
+            fontWeight: 'bold',
+          }}
+        >
+          -{deal.discount}%
+        </div>
       </div>
+
+      {/* Details */}
+      <div>
+        <h3 style={{ fontSize: '20px', marginBottom: '10px' }}>
+          {deal.title}
+          {lastAddedIds.includes(deal.id) && (
+            <span
+              style={{
+                background: '#fde68a',
+                color: '#92400e',
+                padding: '2px 6px',
+                borderRadius: '4px',
+                fontSize: '11px',
+                marginLeft: '8px',
+              }}
+            >
+              NEW
+            </span>
+          )}
+        </h3>
+
+        <div style={{ marginBottom: '10px' }}>
+          <span style={{ color: '#f90' }}>⭐ {deal.rating}</span>
+          <span style={{ color: '#999', marginLeft: '10px' }}>
+            ({deal.reviewCount.toLocaleString()})
+          </span>
+        </div>
+
+        <div style={{ marginBottom: '10px' }}>
+          <span
+            style={{
+              fontSize: '28px',
+              fontWeight: 'bold',
+              color: '#0a0',
+            }}
+          >
+            ${deal.currentPrice.toFixed(2)}
+          </span>
+          <span
+            style={{
+              fontSize: '18px',
+              color: '#999',
+              textDecoration: 'line-through',
+              marginLeft: '10px',
+            }}
+          >
+            ${deal.originalPrice.toFixed(2)}
+          </span>
+        </div>
+
+        <div style={{ color: '#0a0', fontWeight: 'bold' }}>
+          💰 Save ${(deal.originalPrice - deal.currentPrice).toFixed(2)}!
+        </div>
+      </div>
+
+      {/* Buttons */}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '10px',
+          minWidth: '150px',
+        }}
+      >
+        {getDealCode(deal) && (
+          <button
+            onClick={() => copy(getDealCode(deal))}
+            style={{
+              padding: '10px',
+              background: '#10b981',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              fontSize: '12px',
+            }}
+          >
+            🎟️ Copy Code
+          </button>
+        )}
+
+        <button
+          onClick={() => copy(generatePost(deal))}
+          style={{
+            padding: '10px',
+            background: '#1877f2',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: '12px',
+          }}
+        >
+          📘 Copy Post
+        </button>
+
+        {/* AI Rewrite */}
+        <button
+          onClick={async () => {
+            try {
+              setAiStatus('Processing…');
+              const text = generatePost(deal);
+
+              const resp = await fetch(`${API_BASE}/api/rewrite`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text, model: aiModel }),
+              });
+
+              const data = await resp.json();
+
+              if (data.success) {
+                setDeals((prev) =>
+                  prev.map((d) =>
+                    d.id === deal.id
+                      ? { ...d, rewritten: data.rewritten }
+                      : d
+                  )
+                );
+                setAiStatus('Done ✅');
+              } else {
+                setAiStatus('Error ❌');
+                alert(`Rewrite failed: ${data.error}`);
+              }
+            } catch (err) {
+              setAiStatus('Error ❌');
+              alert(`AI rewrite failed: ${err.message}`);
+            } finally {
+              setTimeout(() => setAiStatus('Ready'), 3000);
+            }
+          }}
+          disabled={aiStatus === 'Processing…'}
+          style={{
+            padding: '10px',
+            background:
+              aiStatus === 'Processing…' ? '#999' : '#22c55e',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            cursor:
+              aiStatus === 'Processing…' ? 'wait' : 'pointer',
+            fontWeight: 'bold',
+            fontSize: '12px',
+          }}
+        >
+          {aiStatus === 'Processing…'
+            ? '⏳ Rewriting…'
+            : '🤖 AI Rewrite'}
+        </button>
+
+        <button
+          onClick={() => shareToFacebook(deal)}
+          style={{
+            padding: '10px',
+            background: '#4267B2',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: '12px',
+          }}
+        >
+          🔁 Share FB
+        </button>
+
+        <button
+          onClick={() => copy(deal.url)}
+          style={{
+            padding: '10px',
+            background: '#8b5cf6',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: '12px',
+          }}
+        >
+          🔗 Copy Link
+        </button>
+
+        <button
+          onClick={() => window.open(deal.url, '_blank')}
+          style={{
+            padding: '10px',
+            background: '#ff9900',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: '12px',
+          }}
+        >
+          🛒 View Amazon
+        </button>
+
+        <button
+          onClick={() =>
+            setDeals(deals.filter((d) => d.id !== deal.id))
+          }
+          style={{
+            padding: '10px',
+            background: '#ef4444',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: '12px',
+          }}
+        >
+          🗑️ Remove
+        </button>
+      </div>
+
+      {/* Preview textarea */}
+      {deal.rewritten && (
+        <textarea
+          readOnly
+          value={deal.rewritten}
+          style={{
+            gridColumn: '1 / -1',
+            marginTop: '10px',
+            width: '100%',
+            height: '100px',
+            fontSize: '12px',
+            padding: '6px',
+            border: '1px solid #ccc',
+            borderRadius: '6px',
+            background: '#f9fafb',
+            color: '#333',
+          }}
+        />
+      )}
     </div>
-  );
+  ))
+)}
+
+{/* Sentinel & loaders */}
+<div ref={sentinelRef} style={{ height: '1px' }}></div>
+
+{isLoadingMore && (
+  <div
+    style={{
+      textAlign: 'center',
+      padding: '20px',
+      color: '#666',
+    }}
+  >
+    Loading more deals...
+  </div>
+)}
+
+{!noMorePages && displayedDeals.length > 0 && (
+  <div style={{ textAlign: 'center', marginTop: '20px' }}>
+    <button
+      onClick={loadMoreFromServer}
+      disabled={isLoadingMore}
+      style={{
+        padding: '12px 20px',
+        background: isLoadingMore ? '#999' : '#1f2937',
+        color: 'white',
+        border: 'none',
+        borderRadius: '8px',
+        cursor: isLoadingMore ? 'not-allowed' : 'pointer',
+        fontWeight: 'bold',
+      }}
+    >
+      {isLoadingMore ? 'Loading...' : 'Load More'}
+    </button>
+  </div>
+)}
+
+</div> 
+);
+
 }
 
 export default App;

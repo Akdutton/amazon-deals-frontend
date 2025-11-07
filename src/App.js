@@ -286,12 +286,9 @@ ${deal.url}
       priceSection += `Use code: ${couponCode}\n\n`;
     } 
     return `#ad\n\n${priceSection}${meta.title || url}\n\n${meta.description ? meta.description + '\n\n' : ''}Grab it now! 👇\n${url}\n\n⚡Prices may change at any time.\n\n#AmazonDeals #AllAboutSavings`;
-      priceSection += `💰 Price: ${currPrice}\n\n`;
-    };
+  };  
     
-    
-
-  const shareExternalOnFacebook = (meta, url) => {
+    const shareExternalOnFacebook = (meta, url) => {
     const quote = encodeURIComponent(generatePostForExternal(meta, url));
     const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${quote}`;
     window.open(shareUrl, '_blank', 'noopener,noreferrer');
@@ -794,6 +791,62 @@ ${deal.url}
                 >
                   📘 Copy Post
                 </button>
+
+              {/* 🤖 AI Rewrite button */}
+              <button
+                onClick={async () => {
+                  const text = generatePost(deal);
+    
+                  const resp = await fetch(`${API_BASE}/api/rewrite`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ text })
+                });
+                const data = await resp.json();
+                if (data.success) {
+              // Copy or alert the rewritten text (you can also open a modal)
+                setDeals(prev => 
+                  prev.map(d =>
+                     d.id === deal.id ? { ...d, rewritten: data.rewritten }: d
+                    )
+                  );
+                }
+              }}
+              style={{ padding: '10px',
+              background: '#22c55e', 
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '6px', 
+              cursor: 'pointer', 
+              fontWeight: 'bold', 
+              fontSize: '12px' 
+               }}
+              > 
+              🤖 AI Rewrite
+             </button>
+
+             {/* ✅ PREVIEW GOES HERE — inside the same map */}
+            {deal.rewritten && (
+             <textarea
+               readOnly
+               value={deal.rewritten}
+               style={{
+                 gridColumn: '1 / -1',
+                 marginTop: '10px',
+                 width: '100%',
+                 height: '100px',
+                 fontSize: '12px',
+                 padding: '6px',
+                 border: '1px solid #ccc',
+                 borderRadius: '6px',
+                 background: '#f9fafb',
+                 color: '#333'
+                 }}
+              />
+            )}
+       
+        
+      
                 
                 <button 
                   onClick={() => shareToFacebook(deal)} 
@@ -826,6 +879,9 @@ ${deal.url}
             </div>
           ))
         )}
+
+      
+
 
         {/* Sentinel */}
         <div ref={sentinelRef} style={{ height: '1px' }}></div>

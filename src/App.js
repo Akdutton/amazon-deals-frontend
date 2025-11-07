@@ -44,8 +44,8 @@ function App() {
 
   const [monitorStats, setMonitorStats] = useState(null);
   const [showMonitor, setShowMonitor] = useState(false);
-  const [aiModel, setAiModel] = useState('turner007//pegasus_paraphrase');
-  const [aiStaus, setAiStatus] = useState('Ready');
+  const [aiModel, setAiModel] = useState('tuner007//pegasus_paraphrase');
+  const [aiStatus, setAiStatus] = useState('Ready');
   const sentinelRef = useRef(null);
 
   // ========================================

@@ -516,51 +516,7 @@ ${deal.url}
             </label>
           </div>
 </div>
-</div>
-         <button
-  onClick={async () => {
-    try {
-      setAiStatus('Processing…');
-      const text = generatePost(deal);
-
-      const resp = await fetch(`${API_BASE}/api/rewrite`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, model: aiModel })
-      });
-
-      const data = await resp.json();
-
-      if (data.success) {
-        setDeals(prev =>
-          prev.map(d =>
-            d.id === deal.id ? { ...d, rewritten: data.rewritten } : d
-          )
-        );
-        setAiStatus('Done ✅');
-      } else {
-        setAiStatus('Error ❌');
-        alert(`Rewrite failed: ${data.error || 'Unknown error'}`);
-      }
-    } catch (err) {
-      setAiStatus('Error ❌');
-      alert(`AI rewrite failed: ${err.message}`);
-    }
-  }}
-  disabled={aiStatus === 'Processing…'}
-  style={{
-    padding: '10px',
-    background: aiStatus === 'Processing…' ? '#999' : '#22c55e',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: aiStatus === 'Processing…' ? 'wait' : 'pointer',
-    fontWeight: 'bold',
-    fontSize: '12px'
-  }}
->
-  {aiStatus === 'Processing…' ? '⏳ Rewriting...' : '🤖 AI Rewrite'}
-</button> 
+</div>   
 
 {/* 🤖 AI Model Settings */}
 <div

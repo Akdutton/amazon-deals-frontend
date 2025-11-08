@@ -46,7 +46,7 @@ function App() {
   const [showMonitor, setShowMonitor] = useState(false);
   const [aiModel, setAiModel] = useState('tuner007//pegasus_paraphrase');
   const [aiStatus, setAiStatus] = useState('Ready');
-  const [rewritingExternal, setRewritingExternal] = useState(false0);
+  const [rewritingExternal, setRewritingExternal] = useState(false);
   const [externalRewritten, setExternalRewritten] = useState('');
   const sentinelRef = useRef(null);
 

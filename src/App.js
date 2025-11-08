@@ -46,6 +46,8 @@ function App() {
   const [showMonitor, setShowMonitor] = useState(false);
   const [aiModel, setAiModel] = useState('tuner007//pegasus_paraphrase');
   const [aiStatus, setAiStatus] = useState('Ready');
+  const [rewritingExternal, setRewritingExternal] = useState(false0);
+  const [externalRewritten, setExternalRewritten] = useState('');
   const sentinelRef = useRef(null);
 
   // ========================================
@@ -563,6 +565,7 @@ ${deal.url}
         borderRadius: '6px'
       }}
     />
+
     <button 
       onClick={fetchExternalMetadata}
       disabled={fetchingMeta}
@@ -648,6 +651,63 @@ ${deal.url}
     </div>
   )}
 </div>
+
+<button
+  onClick={async () => {
+    try {
+      setRewritingExternal(true);
+      setExternalRewritten('');
+      const text = generatePostForExternal(externalMeta || {}, externalUrl);
+
+      const resp = await fetch(`${API_BASE}/api/rewrite`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, model: aiModel })
+      });
+
+      const data = await resp.json();
+      if (data.success) {
+        setExternalRewritten(data.rewritten);
+      } else {
+        alert(`AI rewrite failed: ${data.error}`);
+      }
+    } catch (err) {
+      alert(`AI rewrite failed: ${err.message}`);
+    } finally {
+      setRewritingExternal(false);
+    }
+  }}
+  disabled={rewritingExternal || !externalMeta}
+  style={{
+    padding: '10px 14px',
+    borderRadius: '6px',
+    background: rewritingExternal ? '#999' : '#22c55e',
+    color: 'white',
+    fontWeight: 'bold',
+    border: 'none',
+    cursor: rewritingExternal ? 'wait' : 'pointer'
+  }}
+>
+  {rewritingExternal ? '⏳ Rewriting…' : '🤖 AI Rewrite URL Post'}
+</button>
+
+{externalRewritten && (
+  <textarea
+    readOnly
+    value={externalRewritten}
+    style={{
+      marginTop: '10px',
+      width: '100%',
+      height: '120px',
+      fontSize: '13px',
+      padding: '8px',
+      border: '1px solid #ccc',
+      borderRadius: '6px',
+      background: '#f9fafb',
+      color: '#333'
+    }}
+  />
+)}
 
 {/* Preview section */}
 {externalMeta && (

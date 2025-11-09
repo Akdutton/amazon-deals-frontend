@@ -677,6 +677,12 @@ ${deal.url}
       });
 
       const data = await resp.json();
+      //Collect all generated_text values
+      const rewrites = Array.isArray(data)
+        ? data.map(item => item.generated_text).filter(Boolean)
+        : [data.generated_text || text];
+
+  
       if (data.success) {
         setExternalRewritten(data.rewritten);
       } else {

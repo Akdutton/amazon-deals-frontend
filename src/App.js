@@ -655,27 +655,35 @@ ${deal.url}
   )}
 </div>
 
- <button
+<button
   onClick={async () => {
     try {
       setRewritingExternal(true);
       setExternalRewritten('');
+
       const text = generatePostForExternal(externalMeta || {}, externalUrl);
+      console.log('Generated external text:', text);
+
+      if (!text) {
+        alert('No text to rewrite');
+        setRewritingExternal(false);
+        return;
+      }
 
       const resp = await fetch(`${API_BASE}/api/rewrite`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, model: aiModel })
+        body: JSON.stringify({ text }) // only send text
       });
 
       const data = await resp.json();
       if (data.success) {
         setExternalRewritten(data.rewritten);
       } else {
-        alert(`AI rewrite failed: ${data.error}`);
+        alert(`AI rewrite failed: ${data.error}`);
       }
     } catch (err) {
-      alert(`AI rewrite failed: ${err.message}`);
+      alert(`AI rewrite failed: ${err.message}`);
     } finally {
       setRewritingExternal(false);
     }
@@ -691,8 +699,9 @@ ${deal.url}
     cursor: rewritingExternal ? 'wait' : 'pointer'
   }}
 >
-  {rewritingExternal ? '⏳ Rewriting…' : '🤖 AI Rewrite URL Post'}
+  {rewritingExternal ? '⏳ Rewriting…' : '🤖 AI Rewrite URL Post'}
 </button>
+
 
 {externalRewritten && (
   <textarea

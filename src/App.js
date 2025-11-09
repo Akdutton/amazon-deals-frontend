@@ -7,7 +7,10 @@ function App() {
   // CONFIGURATION
   // ========================================
   
-  const API_BASE = 'https://amazon-deals-backend.onrender.com';
+  const API_BASE = 
+  process.env.NODE_ENV === 'development'
+  ? 'http://localhost:3001'
+  : 'https://amazon-deals-backend.onrender.com';
 
   // ========================================
   // STATE MANAGEMENT
@@ -652,7 +655,7 @@ ${deal.url}
   )}
 </div>
 
-<button
+ <button
   onClick={async () => {
     try {
       setRewritingExternal(true);

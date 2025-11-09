@@ -702,7 +702,6 @@ ${deal.url}
   {rewritingExternal ? '⏳ Rewriting…' : '🤖 AI Rewrite URL Post'}
 </button>
 
-
 {externalRewritten && (
   <textarea
     readOnly
@@ -736,6 +735,7 @@ ${deal.url}
       marginBottom: '25px'
     }}
   >
+    
     {/* Product image */}
     {externalMeta.image && (
       <img

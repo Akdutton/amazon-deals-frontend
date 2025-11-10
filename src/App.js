@@ -534,21 +534,23 @@ ${deal.url}
   }}
 >
   <strong style={{ fontSize: '16px' }}>🤖 AI Model</strong>
-  <div style={{ marginTop: '8px' }}>
-    <select
-      value={aiModel}
-      onChange={(e) => setAiModel(e.target.value)}   // ✅ uses setAiModel()
-      style={{
-        padding: '6px 8px',
-        borderRadius: '6px',
-        border: '1px solid #ccc'
-      }}
-    >
-      <option value="tuner007/pegasus_paraphrase">Pegasus (High Quality)</option>
-      <option value="humarin/chatgpt_paraphraser_on_T5_base">ChatGPT‑T5</option>
-      <option value="google/flan-t5-base">Flan‑T5 (Fast)</option>
-    </select>
-  </div>
+<div style={{ marginTop: '8px' }}>
+  <select
+    value={aiModel}
+    onChange={(e) => setAiModel(e.target.value)}
+    style={{
+      padding: '6px 8px',
+      borderRadius: '6px',
+      border: '1px solid #ccc'
+    }}
+  >
+    <option value="google/flan-t5-small">Flan‑T5 Small (Fastest ⚡)</option>
+    <option value="google/flan-t5-base">Flan‑T5 Base (Balanced 🎯)</option>
+    <option value="sentence-transformers/paraphrase-MiniLM-L3-v2">
+      MiniLM (Compact 📦)
+    </option>
+  </select>
+</div>
 
 
           {/* External URL & Manual Facebook Post Generator */}
@@ -661,11 +663,11 @@ ${deal.url}
       setRewritingExternal(true);
       setExternalRewritten('');
 
-      const text = generatePostForExternal(externalMeta || {}, externalUrl);
-      console.log('Generated external text:', text);
+      // Use whatever user has in the bar, can be URL or text
+      const textToSend = externalUrl.trim();
 
-      if (!text) {
-        alert('No text to rewrite');
+      if (!textToSend) {
+        alert('Please enter a URL or product description');
         setRewritingExternal(false);
         return;
       }
@@ -673,15 +675,19 @@ ${deal.url}
       const resp = await fetch(`${API_BASE}/api/rewrite`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }) // only send text
+        body: JSON.stringify({ text: textToSend, model: aiModel })
       });
 
       const data = await resp.json();
-    
+
       if (data.success) {
         setExternalRewritten(data.rewritten);
+      } else if (data.retry) {
+        setExternalRewritten(
+          '⏳ Model is warming up. Please try again in a few seconds.'
+        );
       } else {
-        alert(`AI rewrite failed: ${data.error}`);
+        alert(`AI rewrite failed: ${data.error || data.message}`);
       }
     } catch (err) {
       alert(`AI rewrite failed: ${err.message}`);
@@ -689,7 +695,7 @@ ${deal.url}
       setRewritingExternal(false);
     }
   }}
-  disabled={rewritingExternal || !externalMeta}
+  disabled={rewritingExternal || !externalUrl}
   style={{
     padding: '10px 14px',
     borderRadius: '6px',
@@ -700,7 +706,7 @@ ${deal.url}
     cursor: rewritingExternal ? 'wait' : 'pointer'
   }}
 >
-  {rewritingExternal ? '⏳ Rewriting…' : '🤖 AI Rewrite URL Post'}
+  {rewritingExternal ? '⏳ Rewriting…' : '🤖 AI Rewrite'}
 </button>
 
 {externalRewritten && (

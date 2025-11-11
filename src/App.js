@@ -44,8 +44,13 @@ function App() {
   const [monitorStats, setMonitorStats] = useState(null);
   const [showMonitor, setShowMonitor] = useState(false);
 
-  const [aiModel, setAiModel] = useState('gpt2');
+  const [aiModel, setAiModel] = useState('mistralai/mistral-7b-instruct:free');
   const [aiStatuses, setAiStatuses] = useState({}); // per-deal AI status
+  const AI_MODELS = [
+    { id: 'mistralai/mistral-7b-instruct:free', label:'⚡ Mistral 7B (Free, Fast)', price: 'FREE'},
+    { id: 'meta-llama/llama-2-7b-chat', label: '🦙 Llama 2 7B (Fast)', price: 'FREE'},
+    { id: 'gpt-3.5-turbo', label: '🚀 GPT-3.5 Turbo (Best Quality)', price: '$' },
+  ]
 
   const sentinelRef = useRef(null);
 
@@ -229,6 +234,41 @@ function App() {
     )}&quote=${quote}`;
     window.open(shareUrl, '_blank', 'noopener,noreferrer');
   };
+  {/* --- AI Model Selector --- */}
+<div style={{ 
+  marginBottom: '30px', 
+  padding: '20px', 
+  backgroundColor: 'rgba(255,255,255,0.95)', 
+  borderRadius: '12px',
+  boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+}}>
+  <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold', fontSize: '16px' }}>
+    🤖 Select AI Model:
+  </label>
+  <select 
+    value={aiModel} 
+    onChange={(e) => setAiModel(e.target.value)}
+    style={{
+      padding: '12px',
+      borderRadius: '8px',
+      border: '2px solid #667eea',
+      fontSize: '15px',
+      backgroundColor: '#fff',
+      cursor: 'pointer',
+      width: '100%',
+      maxWidth: '500px'
+    }}
+  >
+    {AI_MODELS.map(model => (
+      <option key={model.id} value={model.id}>
+        {model.label} ({model.price})
+      </option>
+    ))}
+  </select>
+  <small style={{ display: 'block', marginTop: '8px', color: '#666' }}>
+    💡 Tip: Mistral is fastest & free. GPT-3.5 is best quality.
+  </small>
+</div>
 
   const fetchExternalMetadata = async () => {
     if (!externalUrl.trim()) return;
